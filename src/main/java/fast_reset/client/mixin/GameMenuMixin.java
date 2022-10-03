@@ -67,23 +67,23 @@ public class GameMenuMixin extends Screen {
         this.addButton(new ButtonWidget(x, y, width, height, new TranslatableText("menu.quitWorld").getString(), (buttonWidgetX) -> {
             Client.saveOnQuit = false;
 
-            boolean bl = this.minecraft.isInSingleplayer();
-            boolean bl2 = this.minecraft.isConnectedToRealms();
+            boolean bl = this.client.isInSingleplayer();
+            boolean bl2 = this.client.isConnectedToRealms();
             buttonWidgetX.active = false;
-            this.minecraft.world.disconnect();
+            this.client.world.disconnect();
             if (bl) {
-                this.minecraft.disconnect(new SaveLevelScreen(new TranslatableText("menu.savingLevel")));
+                this.client.disconnect(new SaveLevelScreen(new TranslatableText("menu.savingLevel")));
             } else {
-                this.minecraft.disconnect();
+                this.client.disconnect();
             }
 
             if (bl) {
-                this.minecraft.openScreen(new TitleScreen());
+                this.client.openScreen(new TitleScreen());
             } else if (bl2) {
                 RealmsBridge realmsBridge = new RealmsBridge();
                 realmsBridge.switchToRealms(new TitleScreen());
             } else {
-                this.minecraft.openScreen(new MultiplayerScreen(new TitleScreen()));
+                this.client.openScreen(new MultiplayerScreen(new TitleScreen()));
             }
             Client.saveOnQuit = true;
         }));
