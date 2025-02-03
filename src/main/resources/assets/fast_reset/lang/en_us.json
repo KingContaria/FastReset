@@ -1,8 +1,8 @@
 {
-  "fast_reset.menu.quitWorld": "menu.quitWorld",
+  "fast_reset.menu.quitWorld": "Quit to Title",
 
   "speedrunapi.config.fast_reset.option.buttonLocation": "Button Location",
-  "speedrunapi.config.fast_reset.option.buttonLocation.description": "Sets the location of the menu.quitWorld button on the pause menu.",
+  "speedrunapi.config.fast_reset.option.buttonLocation.description": "Sets the location of the Quit to Title button on the pause menu.",
   "speedrunapi.config.fast_reset.option.buttonLocation.value.BOTTOM_RIGHT": "Bottom Right",
   "speedrunapi.config.fast_reset.option.buttonLocation.value.CENTER": "Center",
   "speedrunapi.config.fast_reset.option.buttonLocation.value.REPLACE_SQ": "Replace Save & Quit",
@@ -13,7 +13,5 @@
   "speedrunapi.config.fast_reset.option.alwaysSaveAfter.seconds": "%s seconds",
   "speedrunapi.config.fast_reset.option.alwaysSaveAfter.minutes": "%s minutes",
   "speedrunapi.config.fast_reset.option.alwaysSaveAfter.hours": "%s hours",
-  "speedrunapi.config.fast_reset.option.alwaysSaveAfter.unknown": "Never",
-
-  "speedrunapi.config.fast_reset.option.test": "Complete Futures"
+  "speedrunapi.config.fast_reset.option.alwaysSaveAfter.unknown": "Never"
 }
