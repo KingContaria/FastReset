@@ -26,8 +26,8 @@
     "fast_reset.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.15.7",
-    "minecraft": "1.16.1",
-    "speedrunapi": ">=2.0"
+    "fabricloader": ">=0.16.0",
+    "minecraft": "1.16.x",
+    "speedrunapi": ">=2.0-beta.1"
   }
 }

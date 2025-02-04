@@ -26,6 +26,7 @@ dependencies {
     // SpeedrunAPI
     // check for the latest versions at https://jitpack.io/#kingcontaria/speedrunapi
     modImplementation "com.github.KingContaria:SpeedrunAPI:8497ae7479"
+    annotationProcessor "com.github.bawnorton.mixinsquared:mixinsquared-fabric:0.1.1"
 }
 
 loom {
