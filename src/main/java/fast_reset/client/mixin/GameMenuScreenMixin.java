@@ -1,6 +1,5 @@
 package fast_reset.client.mixin;
 
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import fast_reset.client.FastReset;
 import fast_reset.client.FastResetConfig;
 import fast_reset.client.interfaces.FRMinecraftServer;
@@ -11,36 +10,36 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Slice;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.Objects;
 
 @Mixin(GameMenuScreen.class)
 public abstract class GameMenuScreenMixin extends Screen {
+    @Shadow
+    @Nullable
+    private ButtonWidget exitButton;
 
     protected GameMenuScreenMixin(Text title) {
         super(title);
     }
 
-    @ModifyExpressionValue(
+    @Inject(
             method = "initWidgets",
-            at = @At(
-                    value = "NEW",
-                    target = "(IIIILnet/minecraft/text/Text;Lnet/minecraft/client/gui/widget/ButtonWidget$PressAction;)Lnet/minecraft/client/gui/widget/ButtonWidget;"
-            ),
-            slice = @Slice(
-                    from = @At(
-                            value = "CONSTANT",
-                            args = "stringValue=menu.returnToMenu"
-                    )
-            )
+            at = @At("TAIL")
     )
-    private ButtonWidget createFastResetButton(ButtonWidget saveButton) {
+    private void createFastResetButton(CallbackInfo ci) {
         if (!MinecraftClient.getInstance().isInSingleplayer() || !this.shouldFastReset()) {
-            return saveButton;
+            return;
         }
 
+        ButtonWidget saveButton = Objects.requireNonNull(this.exitButton);
         Text menuQuitWorld = TextUtil.translatable("fast_reset.menu.quitWorld");
         int height = 20;
         int width;
@@ -49,17 +48,17 @@ public abstract class GameMenuScreenMixin extends Screen {
         switch (FastReset.config.buttonLocation) {
             case REPLACE_SQ:
                 width = saveButton.getWidth();
-                x = saveButton.x;
-                y = saveButton.y;
+                x = saveButton.getX();
+                y = saveButton.getY();
 
                 saveButton.setWidth(this.textRenderer.getWidth(saveButton.getMessage()) + 30);
-                saveButton.x = this.width - saveButton.getWidth() - 4;
-                saveButton.y = this.height - saveButton.getHeight() - 4;
+                saveButton.setX(this.width - saveButton.getWidth() - 4);
+                saveButton.setY(this.height - saveButton.getHeight() - 4);
                 break;
             case CENTER:
                 width = saveButton.getWidth();
-                x = saveButton.x;
-                y = saveButton.y + 24;
+                x = saveButton.getX();
+                y = saveButton.getY() + 24;
                 break;
             case BOTTOM_RIGHT:
             default:
@@ -68,16 +67,14 @@ public abstract class GameMenuScreenMixin extends Screen {
                 y = this.height - height - 4;
         }
 
-        ClickableWidget fastResetButton = this.addDrawableChild(new ButtonWidget(x, y, width, height, menuQuitWorld, button -> {
+        ClickableWidget fastResetButton = this.addDrawableChild(ButtonWidget.builder(menuQuitWorld, button -> {
             if (MinecraftClient.getInstance().getServer() != null) {
                 ((FRMinecraftServer) MinecraftClient.getInstance().getServer()).fastReset$fastReset();
             }
             saveButton.onPress();
-        }));
+        }).dimensions(x, y, width, height).build());
 
         fastResetButton.visible = FastReset.config.buttonLocation != FastResetConfig.ButtonLocation.HIDE;
-
-        return saveButton;
     }
 
     @Unique

@@ -1,6 +1,5 @@
 package fast_reset.client.mixin;
 
-import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import fast_reset.client.FastReset;
 import fast_reset.client.interfaces.FRMinecraftServer;
@@ -19,8 +18,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(MinecraftServer.class)
 public abstract class MinecraftServerMixin extends ReentrantThreadExecutor<ServerTask> implements FRMinecraftServer {
     @Shadow
-    private volatile boolean running;
-    @Shadow
     private volatile boolean loading;
 
     @Unique
@@ -28,14 +25,6 @@ public abstract class MinecraftServerMixin extends ReentrantThreadExecutor<Serve
 
     public MinecraftServerMixin(String string) {
         super(string);
-    }
-
-    @ModifyReturnValue(
-            method = "shouldKeepTicking",
-            at = @At("RETURN")
-    )
-    private boolean stopTicking(boolean shouldKeepTicking) {
-        return shouldKeepTicking && this.shouldTick();
     }
 
     @Inject(
@@ -78,11 +67,6 @@ public abstract class MinecraftServerMixin extends ReentrantThreadExecutor<Serve
         if (!this.fastReset$shouldSave()) {
             ((FRThreadExecutor) this).fast_reset$cancelFutures();
         }
-    }
-
-    @Unique
-    private boolean shouldTick() {
-        return !(this.fastReset && !this.running && this.loading);
     }
 
     @Override

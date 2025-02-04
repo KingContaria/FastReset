@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 @Mixin(ThreadedAnvilChunkStorage.class)
 public abstract class ThreadedAnvilChunkStorageMixin {
@@ -17,10 +17,21 @@ public abstract class ThreadedAnvilChunkStorageMixin {
             method = "loadChunk",
             at = @At(
                     value = "INVOKE",
-                    target = "Ljava/util/concurrent/CompletableFuture;supplyAsync(Ljava/util/function/Supplier;Ljava/util/concurrent/Executor;)Ljava/util/concurrent/CompletableFuture;"
+                    target = "Ljava/util/concurrent/CompletableFuture;thenApplyAsync(Ljava/util/function/Function;Ljava/util/concurrent/Executor;)Ljava/util/concurrent/CompletableFuture;"
             )
     )
-    private <T> CompletableFuture<T> redirectCompletableFuture(Supplier<T> supplier, Executor executor) {
-        return AsyncSupply.supplyAsync(supplier, executor);
+    private <T, U> CompletableFuture<U> redirectCompletableFuture(CompletableFuture<T> from, Function<T, U> function, Executor executor) {
+        return AsyncSupply.thenApplyAsync(from, function, executor);
+    }
+
+    @Redirect(
+            method = "loadChunk",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Ljava/util/concurrent/CompletableFuture;exceptionallyAsync(Ljava/util/function/Function;Ljava/util/concurrent/Executor;)Ljava/util/concurrent/CompletableFuture;"
+            )
+    )
+    private <T> CompletableFuture<T> redirectCompletableFuture2(CompletableFuture<T> from, Function<Throwable, T> function, Executor executor) {
+        return AsyncSupply.exceptionallyAsync(from, function, executor);
     }
 }
