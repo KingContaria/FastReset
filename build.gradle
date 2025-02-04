@@ -1,10 +1,10 @@
 plugins {
-    id "fabric-loom" version "1.5-SNAPSHOT"
+    id "fabric-loom" version "1.9-SNAPSHOT"
     id 'maven-publish'
 }
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_21
+targetCompatibility = JavaVersion.VERSION_21
 
 version = project.mod_version + "+" + project.target_version
 group = maven_group
@@ -25,7 +25,7 @@ dependencies {
 
     // SpeedrunAPI
     // check for the latest versions at https://jitpack.io/#kingcontaria/speedrunapi
-    modImplementation "com.github.KingContaria:SpeedrunAPI:05ed9234ec"
+    modImplementation "com.github.KingContaria:SpeedrunAPI:5bcb6bf136"
     annotationProcessor "com.github.bawnorton.mixinsquared:mixinsquared-fabric:0.1.1"
 }
 
@@ -43,7 +43,7 @@ processResources {
 
 tasks.withType(JavaCompile).configureEach {
     it.options.encoding = "UTF-8"
-    it.options.release.set(8)
+    it.options.release.set(21)
 }
 
 java {

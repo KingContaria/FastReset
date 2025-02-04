@@ -1,7 +1,7 @@
 package fast_reset.client.mixin.completefutures;
 
-import com.mojang.datafixers.util.Either;
 import net.minecraft.server.world.ChunkHolder;
+import net.minecraft.server.world.OptionalChunk;
 import net.minecraft.world.chunk.Chunk;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,7 +20,7 @@ public abstract class ChunkHolderMixin {
             ),
             index = 1
     )
-    private BiFunction<Chunk, ? extends Either<? extends Chunk, ChunkHolder.Unloaded>, Chunk> handleCancelledFuture(BiFunction<?, ?, ?> fn) {
-        return (chunk, either) -> either != null ? either.map(chunkx -> chunkx, unloaded -> chunk) : chunk;
+    private BiFunction<Chunk, ? extends OptionalChunk<? extends Chunk>, Chunk> handleCancelledFuture(BiFunction<?, ?, ?> fn) {
+        return (chunk, otherChunk) -> otherChunk != null ? OptionalChunk.orElse(otherChunk, chunk) : chunk;
     }
 }
