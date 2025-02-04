@@ -6,7 +6,6 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import fast_reset.client.FastReset;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.thread.TaskExecutor;
 import net.minecraft.world.storage.RegionBasedStorage;
 import net.minecraft.world.storage.StorageIoWorker;
 import org.apache.logging.log4j.Logger;
@@ -17,7 +16,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 
 @Mixin(StorageIoWorker.class)
 public abstract class StorageIoWorkerMixin {
@@ -70,17 +68,14 @@ public abstract class StorageIoWorkerMixin {
         this.fastClosed = FastReset.shouldFastClose();
     }
 
-    @WrapOperation(
+    @WrapWithCondition(
             method = "close",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/util/thread/TaskExecutor;ask(Ljava/util/function/Function;)Ljava/util/concurrent/CompletableFuture;"
+                    target = "Ljava/util/concurrent/CompletableFuture;join()Ljava/lang/Object;"
             )
     )
-    private CompletableFuture<?> doNotWaitForTasksToFinish(TaskExecutor<?> executor, Function<?, ?> function, Operation<CompletableFuture<?>> original) {
-        if (this.fastClosed) {
-            return CompletableFuture.completedFuture(null);
-        }
-        return original.call(executor, function);
+    private boolean doNotWaitForTasksToFinish(CompletableFuture<Void> future) {
+        return !this.fastClosed;
     }
 }

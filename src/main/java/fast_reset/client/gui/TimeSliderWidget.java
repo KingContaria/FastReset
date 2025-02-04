@@ -1,17 +1,16 @@
 package fast_reset.client.gui;
 
 import me.contaria.speedrunapi.config.api.SpeedrunOption;
-import me.contaria.speedrunapi.util.TextUtil;
 import net.minecraft.client.gui.widget.SliderWidget;
-import net.minecraft.text.Text;
+import net.minecraft.client.resource.language.I18n;
 
 import java.util.LinkedHashMap;
 
 public class TimeSliderWidget extends SliderWidget {
     private final SpeedrunOption<Integer> option;
 
-    public TimeSliderWidget(int x, int y, int width, int height, Text text, SpeedrunOption<Integer> option) {
-        super(x, y, width, height, text, (double) option.get() / (5 * 60));
+    public TimeSliderWidget(int x, int y, int width, int height, SpeedrunOption<Integer> option) {
+        super(x, y, width, height, (double) option.get() / (5 * 60));
         this.option = option;
         this.updateMessage();
     }
@@ -29,8 +28,8 @@ public class TimeSliderWidget extends SliderWidget {
                 .entrySet()
                 .stream()
                 .filter(entry -> entry.getValue() > 0)
-                .map(entry -> TextUtil.translatable(baseKey + "." + entry.getKey(), entry.getValue()))
-                .reduce((text, text2) -> text.append(" ").append(text2)).orElse(TextUtil.translatable(baseKey + ".unknown"))
+                .map(entry -> I18n.translate(baseKey + "." + entry.getKey(), entry.getValue()))
+                .reduce((text, text2) -> text + " " + text2).orElse(I18n.translate(baseKey + ".unknown"))
         );
     }
 

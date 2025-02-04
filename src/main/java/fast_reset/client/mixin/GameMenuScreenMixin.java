@@ -3,12 +3,12 @@ package fast_reset.client.mixin;
 import fast_reset.client.FastReset;
 import fast_reset.client.FastResetConfig;
 import fast_reset.client.interfaces.FRMinecraftServer;
-import me.contaria.speedrunapi.util.TextUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.GameMenuScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -32,7 +32,7 @@ public abstract class GameMenuScreenMixin extends Screen {
             return saveButton;
         }
 
-        Text menuQuitWorld = TextUtil.translatable("fast_reset.menu.quitWorld");
+        String menuQuitWorld = I18n.translate("fast_reset.menu.quitWorld");
         int height = 20;
         int width;
         int x;
@@ -43,9 +43,9 @@ public abstract class GameMenuScreenMixin extends Screen {
                 x = saveButton.x;
                 y = saveButton.y;
 
-                saveButton.setWidth(this.textRenderer.getWidth(saveButton.getMessage()) + 30);
+                saveButton.setWidth(MinecraftClient.getInstance().textRenderer.getStringWidth(saveButton.getMessage()) + 30);
                 saveButton.x = this.width - saveButton.getWidth() - 4;
-                saveButton.y = this.height - saveButton.getHeight() - 4;
+                saveButton.y = this.height - 20 - 4;
                 break;
             case CENTER:
                 width = saveButton.getWidth();
@@ -54,7 +54,7 @@ public abstract class GameMenuScreenMixin extends Screen {
                 break;
             case BOTTOM_RIGHT:
             default:
-                width = this.textRenderer.getWidth(menuQuitWorld) + 30;
+                width = MinecraftClient.getInstance().textRenderer.getStringWidth(menuQuitWorld) + 30;
                 x = this.width - width - 4;
                 y = this.height - height - 4;
         }
