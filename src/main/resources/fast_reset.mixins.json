@@ -9,10 +9,9 @@
     "RegionFileMixin",
     "ServerChunkManagerMixin",
     "StorageIoWorkerMixin",
-    "completefutures.ChunkHolderMixin",
     "completefutures.ServerChunkManagerMixin",
     "completefutures.TaskExecutorMixin",
-    "completefutures.ThreadedAnvilChunkStorageMixin",
+    "completefutures.ServerChunkLoadingManagerMixin",
     "completefutures.ThreadExecutorMixin"
   ],
   "injectors": {

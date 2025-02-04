@@ -1,7 +1,7 @@
 package fast_reset.client.mixin.completefutures;
 
 import fast_reset.client.completefutures.AsyncSupply;
-import net.minecraft.server.world.ThreadedAnvilChunkStorage;
+import net.minecraft.server.world.ServerChunkLoadingManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -10,8 +10,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Function;
 
-@Mixin(ThreadedAnvilChunkStorage.class)
-public abstract class ThreadedAnvilChunkStorageMixin {
+@Mixin(ServerChunkLoadingManager.class)
+public abstract class ServerChunkLoadingManagerMixin {
 
     @Redirect(
             method = "loadChunk",
