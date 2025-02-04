@@ -3,7 +3,6 @@ package fast_reset.client.mixin;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import fast_reset.client.FastReset;
 import fast_reset.client.interfaces.FRMinecraftServer;
-import fast_reset.client.interfaces.FRThreadExecutor;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.ServerTask;
@@ -57,16 +56,6 @@ public abstract class MinecraftServerMixin extends ReentrantThreadExecutor<Serve
     )
     private boolean disableSaving(MinecraftServer server, boolean bl, boolean bl2, boolean bl3) {
         return this.fastReset$shouldSave();
-    }
-
-    @Inject(
-            method = "shutdown",
-            at = @At("TAIL")
-    )
-    private void cancelRemainingTasks(CallbackInfo ci) {
-        if (!this.fastReset$shouldSave()) {
-            ((FRThreadExecutor) this).fast_reset$cancelFutures();
-        }
     }
 
     @Override

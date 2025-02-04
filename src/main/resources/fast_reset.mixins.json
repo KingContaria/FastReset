@@ -8,11 +8,7 @@
     "MinecraftServerMixin",
     "RegionFileMixin",
     "ServerChunkManagerMixin",
-    "StorageIoWorkerMixin",
-    "completefutures.ServerChunkManagerMixin",
-    "completefutures.TaskExecutorMixin",
-    "completefutures.ServerChunkLoadingManagerMixin",
-    "completefutures.ThreadExecutorMixin"
+    "StorageIoWorkerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
