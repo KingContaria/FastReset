@@ -6,9 +6,7 @@
   "client": [
     "GameMenuScreenMixin",
     "MinecraftServerMixin",
-    "RegionFileMixin",
     "ServerChunkManagerMixin",
-    "StorageIoWorkerMixin",
     "completefutures.ChunkHolderMixin",
     "completefutures.ServerChunkManagerMixin",
     "completefutures.TaskExecutorMixin",

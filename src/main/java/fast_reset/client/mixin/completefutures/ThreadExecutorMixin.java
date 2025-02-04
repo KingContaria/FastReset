@@ -45,8 +45,8 @@ public abstract class ThreadExecutorMixin implements FRThreadExecutor {
 
     @Inject(
             method = {
-                    "submit(Ljava/util/function/Supplier;)Ljava/util/concurrent/CompletableFuture;",
-                    "submit(Ljava/lang/Runnable;)Ljava/util/concurrent/CompletableFuture;",
+                    "submit",
+                    "method_20493",
                     "submitAsync"
             },
             at = @At("HEAD"),
