@@ -1,10 +1,10 @@
 package fast_reset.client.gui;
 
+import me.contaria.speedrunapi.config.api.SpeedrunOption;
 import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import org.mcsr.speedrunapi.config.api.SpeedrunOption;
 
 import java.util.LinkedHashMap;
 
@@ -19,8 +19,8 @@ public class TimeSliderWidget extends SliderWidget {
 
     @Override
     protected void updateMessage() {
-        String baseKey = "speedrunapi.config." + option.getModID() + ".option." + option.getID();
-        int current = option.get();
+        String baseKey = "speedrunapi.config." + this.option.getModID() + ".option." + this.option.getID();
+        int current = this.option.get();
         int hours = current / (60 * 60);
         LinkedHashMap<String, Integer> times = new LinkedHashMap<>(3);
         times.put("hours", hours);
