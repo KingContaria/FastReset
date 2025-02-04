@@ -47,6 +47,21 @@ public abstract class StorageIoWorkerMixin {
         return !this.fastClosed;
     }
 
+    @WrapOperation(
+            method = "write",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Ljava/util/concurrent/CompletableFuture;completeExceptionally(Ljava/lang/Throwable;)Z",
+                    remap = false
+            )
+    )
+    private boolean doNotCompleteExceptionally(CompletableFuture<?> future, Throwable throwable, Operation<Boolean> original) {
+        if (this.fastClosed) {
+            return future.complete(null);
+        }
+        return original.call(future, throwable);
+    }
+
     @Inject(
             method = "close",
             at = @At("HEAD")
