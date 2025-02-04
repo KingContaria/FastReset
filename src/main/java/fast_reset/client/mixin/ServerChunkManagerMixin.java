@@ -13,17 +13,25 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerChunkManager.class)
 public abstract class ServerChunkManagerMixin {
-
     @Shadow
     @Final
     private ServerChunkManager.MainThreadExecutor mainThreadExecutor;
 
-    @WrapWithCondition(method = "close", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerChunkManager;save(Z)V"))
+    @WrapWithCondition(
+            method = "close",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/server/world/ServerChunkManager;save(Z)V"
+            )
+    )
     private boolean skipSaving(ServerChunkManager chunkManager, boolean flush) {
         return !FastReset.shouldFastClose();
     }
 
-    @Inject(method = "close", at = @At("RETURN"))
+    @Inject(
+            method = "close",
+            at = @At("RETURN")
+    )
     private void cancelRemainingTasks(CallbackInfo ci) {
         if (FastReset.shouldFastClose()) {
             //noinspection DataFlowIssue

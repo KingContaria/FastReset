@@ -18,7 +18,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MinecraftServer.class)
 public abstract class MinecraftServerMixin extends ReentrantThreadExecutor<ServerTask> implements FRMinecraftServer {
-
     @Shadow
     private volatile boolean running;
     @Shadow
@@ -31,29 +30,50 @@ public abstract class MinecraftServerMixin extends ReentrantThreadExecutor<Serve
         super(string);
     }
 
-    @ModifyReturnValue(method = "shouldKeepTicking", at = @At("RETURN"))
+    @ModifyReturnValue(
+            method = "shouldKeepTicking",
+            at = @At("RETURN")
+    )
     private boolean stopTicking(boolean shouldKeepTicking) {
         return shouldKeepTicking && this.shouldTick();
     }
 
-    @Inject(method = "shutdown", at = @At("HEAD"))
+    @Inject(
+            method = "shutdown",
+            at = @At("HEAD")
+    )
     private void enableFastClose(CallbackInfo ci) {
         if (!this.fastReset$shouldSave()) {
             FastReset.enableFastClose();
         }
     }
 
-    @WrapWithCondition(method = "shutdown", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;saveAllPlayerData()V"))
+    @WrapWithCondition(
+            method = "shutdown",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/server/PlayerManager;saveAllPlayerData()V"
+            )
+    )
     private boolean disablePlayerSaving(PlayerManager playerManager) {
         return this.fastReset$shouldSave();
     }
 
-    @WrapWithCondition(method = "shutdown", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;save(ZZZ)Z"))
+    @WrapWithCondition(
+            method = "shutdown",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/server/MinecraftServer;save(ZZZ)Z"
+            )
+    )
     private boolean disableSaving(MinecraftServer server, boolean bl, boolean bl2, boolean bl3) {
         return this.fastReset$shouldSave();
     }
 
-    @Inject(method = "shutdown", at = @At("TAIL"))
+    @Inject(
+            method = "shutdown",
+            at = @At("TAIL")
+    )
     private void cancelRemainingTasks(CallbackInfo ci) {
         if (!this.fastReset$shouldSave()) {
             ((FRThreadExecutor) this).fast_reset$cancelFutures();

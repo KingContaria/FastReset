@@ -19,20 +19,25 @@ import java.util.function.Function;
 
 @Mixin(TaskExecutor.class)
 public abstract class TaskExecutorMixin<T> implements MessageListener<T> {
-
     @Unique
     private final boolean shouldRememberFutures = !MinecraftClient.getInstance().isOnThread();
     @Unique
     private Set<CompletableFuture<?>> futures;
 
-    @Inject(method = "<init>", at = @At("TAIL"))
+    @Inject(
+            method = "<init>",
+            at = @At("TAIL")
+    )
     private void initializeFuturesCapture(CallbackInfo ci) {
         if (this.shouldRememberFutures) {
             this.futures = Collections.synchronizedSet(new HashSet<>());
         }
     }
 
-    @Inject(method = "close", at = @At("HEAD"))
+    @Inject(
+            method = "close",
+            at = @At("HEAD")
+    )
     private synchronized void cancelFutures(CallbackInfo ci) {
         if (!this.shouldRememberFutures) {
             return;

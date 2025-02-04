@@ -15,6 +15,8 @@ import java.util.function.Supplier;
 @Mixin(value = ServerChunkManager.class, priority = 1500)
 public abstract class ServerChunkManagerMixin {
 
+    // Lithium overwrites getChunk and separates the
+    // CompletableFuture#supplyAsync into another method
     @Dynamic
     @TargetHandler(
             mixin = "me.jellysquid.mods.lithium.mixin.world.chunk_access.ServerChunkManagerMixin",

@@ -1,10 +1,9 @@
 package fast_reset.client.gui;
 
 import me.contaria.speedrunapi.config.api.SpeedrunOption;
+import me.contaria.speedrunapi.util.TextUtil;
 import net.minecraft.client.gui.widget.SliderWidget;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 import java.util.LinkedHashMap;
 
@@ -30,8 +29,8 @@ public class TimeSliderWidget extends SliderWidget {
                 .entrySet()
                 .stream()
                 .filter(entry -> entry.getValue() > 0)
-                .map(entry -> (MutableText) new TranslatableText(baseKey + "." + entry.getKey(), entry.getValue()))
-                .reduce((text, text2) -> text.append(" ").append(text2)).orElse(new TranslatableText(baseKey + ".unknown"))
+                .map(entry -> TextUtil.translatable(baseKey + "." + entry.getKey(), entry.getValue()))
+                .reduce((text, text2) -> text.append(" ").append(text2)).orElse(TextUtil.translatable(baseKey + ".unknown"))
         );
     }
 

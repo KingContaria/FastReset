@@ -3,12 +3,13 @@ package fast_reset.client.mixin;
 import fast_reset.client.FastReset;
 import fast_reset.client.FastResetConfig;
 import fast_reset.client.interfaces.FRMinecraftServer;
+import me.contaria.speedrunapi.util.TextUtil;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.GameMenuScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,14 +22,17 @@ public abstract class GameMenuScreenMixin extends Screen {
         super(title);
     }
 
-    @ModifyVariable(method = "initWidgets", at = @At("STORE"), ordinal = 1)
+    @ModifyVariable(
+            method = "initWidgets",
+            at = @At("STORE"),
+            ordinal = 1
+    )
     private ButtonWidget createFastResetButton(ButtonWidget saveButton) {
-        assert this.client != null;
-        if (!this.client.isInSingleplayer() || !this.shouldFastReset()) {
+        if (!MinecraftClient.getInstance().isInSingleplayer() || !this.shouldFastReset()) {
             return saveButton;
         }
 
-        Text menuQuitWorld = new TranslatableText("fast_reset.menu.quitWorld");
+        Text menuQuitWorld = TextUtil.translatable("fast_reset.menu.quitWorld");
         int height = 20;
         int width;
         int x;
@@ -56,8 +60,8 @@ public abstract class GameMenuScreenMixin extends Screen {
         }
 
         AbstractButtonWidget fastResetButton = this.addButton(new ButtonWidget(x, y, width, height, menuQuitWorld, button -> {
-            if (this.client != null && this.client.getServer() != null) {
-                ((FRMinecraftServer) this.client.getServer()).fastReset$fastReset();
+            if (MinecraftClient.getInstance().getServer() != null) {
+                ((FRMinecraftServer) MinecraftClient.getInstance().getServer()).fastReset$fastReset();
             }
             saveButton.onPress();
         }));
@@ -72,6 +76,6 @@ public abstract class GameMenuScreenMixin extends Screen {
         if (FastReset.config.alwaysSaveAfter == 0) {
             return true;
         }
-        return this.client.getServer() != null && this.client.getServer().getTicks() <= FastReset.config.alwaysSaveAfter * 20;
+        return MinecraftClient.getInstance().getServer() != null && MinecraftClient.getInstance().getServer().getTicks() <= FastReset.config.alwaysSaveAfter * 20;
     }
 }

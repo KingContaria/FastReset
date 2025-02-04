@@ -19,7 +19,6 @@ import java.util.function.Supplier;
 
 @Mixin(ThreadExecutor.class)
 public abstract class ThreadExecutorMixin implements FRThreadExecutor {
-
     @Shadow
     @Final
     private Queue<Runnable> tasks;
