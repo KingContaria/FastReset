@@ -13,7 +13,7 @@ import java.util.function.BiFunction;
 public abstract class ChunkHolderMixin {
 
     @ModifyArg(
-            method = "updateFuture",
+            method = "combineSavingFuture",
             at = @At(
                     value = "INVOKE",
                     target = "Ljava/util/concurrent/CompletableFuture;thenCombine(Ljava/util/concurrent/CompletionStage;Ljava/util/function/BiFunction;)Ljava/util/concurrent/CompletableFuture;"

@@ -4,7 +4,7 @@ import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import fast_reset.client.FastReset;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.thread.TaskExecutor;
 import net.minecraft.world.storage.RegionBasedStorage;
@@ -40,10 +40,10 @@ public abstract class StorageIoWorkerMixin {
             method = "write",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/storage/RegionBasedStorage;write(Lnet/minecraft/util/math/ChunkPos;Lnet/minecraft/nbt/CompoundTag;)V"
+                    target = "Lnet/minecraft/world/storage/RegionBasedStorage;write(Lnet/minecraft/util/math/ChunkPos;Lnet/minecraft/nbt/NbtCompound;)V"
             )
     )
-    private boolean doNotWriteToStorage(RegionBasedStorage storage, ChunkPos pos, CompoundTag tag) {
+    private boolean doNotWriteToStorage(RegionBasedStorage storage, ChunkPos pos, NbtCompound tag) {
         return !this.fastClosed;
     }
 

@@ -1,5 +1,6 @@
 package fast_reset.client.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import fast_reset.client.FastReset;
 import fast_reset.client.FastResetConfig;
 import fast_reset.client.interfaces.FRMinecraftServer;
@@ -7,13 +8,13 @@ import me.contaria.speedrunapi.util.TextUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.GameMenuScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.Slice;
 
 @Mixin(GameMenuScreen.class)
 public abstract class GameMenuScreenMixin extends Screen {
@@ -22,10 +23,18 @@ public abstract class GameMenuScreenMixin extends Screen {
         super(title);
     }
 
-    @ModifyVariable(
+    @ModifyExpressionValue(
             method = "initWidgets",
-            at = @At("STORE"),
-            ordinal = 1
+            at = @At(
+                    value = "NEW",
+                    target = "(IIIILnet/minecraft/text/Text;Lnet/minecraft/client/gui/widget/ButtonWidget$PressAction;)Lnet/minecraft/client/gui/widget/ButtonWidget;"
+            ),
+            slice = @Slice(
+                    from = @At(
+                            value = "CONSTANT",
+                            args = "stringValue=menu.returnToMenu"
+                    )
+            )
     )
     private ButtonWidget createFastResetButton(ButtonWidget saveButton) {
         if (!MinecraftClient.getInstance().isInSingleplayer() || !this.shouldFastReset()) {
@@ -59,7 +68,7 @@ public abstract class GameMenuScreenMixin extends Screen {
                 y = this.height - height - 4;
         }
 
-        AbstractButtonWidget fastResetButton = this.addButton(new ButtonWidget(x, y, width, height, menuQuitWorld, button -> {
+        ClickableWidget fastResetButton = this.addDrawableChild(new ButtonWidget(x, y, width, height, menuQuitWorld, button -> {
             if (MinecraftClient.getInstance().getServer() != null) {
                 ((FRMinecraftServer) MinecraftClient.getInstance().getServer()).fastReset$fastReset();
             }
