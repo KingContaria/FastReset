@@ -3,13 +3,12 @@ package fast_reset.client.mixin;
 import fast_reset.client.FastReset;
 import fast_reset.client.FastResetConfig;
 import fast_reset.client.interfaces.FRMinecraftServer;
-import me.contaria.speedrunapi.util.TextUtil;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.GameMenuScreen;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.PauseScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -20,27 +19,28 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Objects;
 
-@Mixin(GameMenuScreen.class)
+@Mixin(PauseScreen.class)
 public abstract class GameMenuScreenMixin extends Screen {
     @Shadow
     @Nullable
-    private ButtonWidget exitButton;
+    private Button disconnectButton;
 
-    protected GameMenuScreenMixin(Text title) {
+    protected GameMenuScreenMixin(Component title) {
         super(title);
     }
 
     @Inject(
-            method = "initWidgets",
+            method = "createPauseMenu",
             at = @At("TAIL")
     )
     private void createFastResetButton(CallbackInfo ci) {
-        if (!MinecraftClient.getInstance().isInSingleplayer() || !this.shouldFastReset()) {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (!minecraft.hasSingleplayerServer() || !this.shouldFastReset()) {
             return;
         }
 
-        ButtonWidget saveButton = Objects.requireNonNull(this.exitButton);
-        Text menuQuitWorld = TextUtil.translatable("fast_reset.menu.quitWorld");
+        Button saveButton = Objects.requireNonNull(this.disconnectButton);
+        Component menuQuitWorld = Component.translatable("fast_reset.menu.quitWorld");
         int height = 20;
         int width;
         int x;
@@ -53,17 +53,17 @@ public abstract class GameMenuScreenMixin extends Screen {
                 break;
             case BOTTOM_RIGHT:
             default:
-                width = this.textRenderer.getWidth(menuQuitWorld) + 30;
+                width = this.font.width(menuQuitWorld) + 30;
                 x = this.width - width - 4;
                 y = this.height - height - 4;
         }
 
-        ClickableWidget fastResetButton = this.addDrawableChild(ButtonWidget.builder(menuQuitWorld, button -> {
-            if (MinecraftClient.getInstance().getServer() != null) {
-                ((FRMinecraftServer) MinecraftClient.getInstance().getServer()).fastReset$fastReset();
+        AbstractWidget fastResetButton = this.addRenderableWidget(Button.builder(menuQuitWorld, button -> {
+            if (minecraft.getSingleplayerServer() != null) {
+                ((FRMinecraftServer) minecraft.getSingleplayerServer()).fastReset$fastReset();
             }
-            saveButton.onPress();
-        }).dimensions(x, y, width, height).build());
+            saveButton.onPress(null);
+        }).bounds(x, y, width, height).build());
 
         fastResetButton.visible = FastReset.config.buttonLocation != FastResetConfig.ButtonLocation.HIDE;
     }
@@ -73,6 +73,7 @@ public abstract class GameMenuScreenMixin extends Screen {
         if (FastReset.config.alwaysSaveAfter == 0) {
             return true;
         }
-        return MinecraftClient.getInstance().getServer() != null && MinecraftClient.getInstance().getServer().getTicks() <= FastReset.config.alwaysSaveAfter * 20;
+        Minecraft minecraft = Minecraft.getInstance();
+        return minecraft.getSingleplayerServer() != null && minecraft.getSingleplayerServer().getTickCount() <= FastReset.config.alwaysSaveAfter * 20;
     }
 }

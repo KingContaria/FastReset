@@ -8,7 +8,7 @@ import me.contaria.speedrunapi.config.SpeedrunConfigAPI;
 import me.contaria.speedrunapi.config.api.SpeedrunConfig;
 import me.contaria.speedrunapi.config.api.SpeedrunConfigParsedMetadata;
 import me.contaria.speedrunapi.config.api.SpeedrunOption;
-import me.contaria.speedrunapi.util.TextUtil;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
@@ -25,7 +25,7 @@ public class FastResetConfig implements SpeedrunConfig {
     public @Nullable SpeedrunOption<?> parseField(Field field, SpeedrunConfig config, String... idPrefix) {
         if ("alwaysSaveAfter".equals(field.getName())) {
             return new SpeedrunConfigAPI.CustomOption.Builder<Integer>(this, this, field, idPrefix)
-                    .createWidget((option, innerConfig, configStorage, optionField) -> new TimeSliderWidget(0, 0, 150, 20, TextUtil.empty(), option))
+                    .createWidget((option, innerConfig, configStorage, optionField) -> new TimeSliderWidget(0, 0, 150, 20, Component.empty(), option))
                     .build();
         }
         return SpeedrunConfig.super.parseField(field, config, idPrefix);

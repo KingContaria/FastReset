@@ -2,7 +2,7 @@ package fast_reset.client.mixin;
 
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import fast_reset.client.FastReset;
-import net.minecraft.world.storage.RegionFile;
+import net.minecraft.world.level.chunk.storage.RegionFile;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -15,7 +15,7 @@ public abstract class RegionFileMixin {
             method = "close",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/storage/RegionFile;fillLastSector()V"
+                    target = "Lnet/minecraft/world/level/chunk/storage/RegionFile;padToFullSector()V"
             )
     )
     private boolean skipFillingLastSector(RegionFile file) {

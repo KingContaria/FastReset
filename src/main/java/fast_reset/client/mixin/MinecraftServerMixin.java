@@ -5,9 +5,9 @@ import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import fast_reset.client.FastReset;
 import fast_reset.client.interfaces.FRMinecraftServer;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.PlayerManager;
-import net.minecraft.server.ServerTask;
-import net.minecraft.util.thread.ReentrantThreadExecutor;
+import net.minecraft.server.TickTask;
+import net.minecraft.server.players.PlayerList;
+import net.minecraft.util.thread.ReentrantBlockableEventLoop;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -16,19 +16,19 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MinecraftServer.class)
-public abstract class MinecraftServerMixin extends ReentrantThreadExecutor<ServerTask> implements FRMinecraftServer {
+public abstract class MinecraftServerMixin extends ReentrantBlockableEventLoop<TickTask> implements FRMinecraftServer {
     @Shadow
-    private volatile boolean loading;
+    private volatile boolean isReady;
 
     @Unique
     private volatile boolean fastReset;
 
     public MinecraftServerMixin(String string) {
-        super(string);
+        super(string, false);
     }
 
     @Inject(
-            method = "shutdown",
+            method = "stopServer",
             at = @At("HEAD")
     )
     private void enableFastClose(CallbackInfo ci) {
@@ -38,18 +38,18 @@ public abstract class MinecraftServerMixin extends ReentrantThreadExecutor<Serve
     }
 
     @WrapWithCondition(
-            method = "shutdown",
+            method = "stopServer",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/server/PlayerManager;saveAllPlayerData()V"
+                    target = "Lnet/minecraft/server/players/PlayerList;saveAll()V"
             )
     )
-    private boolean disablePlayerSaving(PlayerManager playerManager) {
+    private boolean disablePlayerSaving(PlayerList playerList) {
         return this.fastReset$shouldSave();
     }
 
     @ModifyExpressionValue(
-            method = "shutdown",
+            method = "stopServer",
             at = @At(
                     value = "INVOKE",
                     target = "Ljava/util/stream/Stream;anyMatch(Ljava/util/function/Predicate;)Z"
@@ -60,10 +60,10 @@ public abstract class MinecraftServerMixin extends ReentrantThreadExecutor<Serve
     }
 
     @WrapWithCondition(
-            method = "shutdown",
+            method = "stopServer",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/server/MinecraftServer;save(ZZZ)Z"
+                    target = "Lnet/minecraft/server/MinecraftServer;saveAllChunks(ZZZ)Z"
             )
     )
     private boolean disableSaving(MinecraftServer server, boolean bl, boolean bl2, boolean bl3) {
@@ -75,10 +75,9 @@ public abstract class MinecraftServerMixin extends ReentrantThreadExecutor<Serve
         this.fastReset = true;
     }
 
-    // MinecraftServer#loading actually means the complete opposite, more like "finishedLoading"
-    // we check it to skip saving on WorldPreview resets
+    // We check readiness to skip saving on resets that happen while a world is still loading.
     @Override
     public boolean fastReset$shouldSave() {
-        return !this.fastReset && this.loading;
+        return !this.fastReset && this.isReady;
     }
 }

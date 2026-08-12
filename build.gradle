@@ -1,17 +1,13 @@
 plugins {
-    id "fabric-loom" version "1.9-SNAPSHOT"
+    id "net.fabricmc.fabric-loom" version "${loom_version}"
     id 'maven-publish'
 }
-
-sourceCompatibility = JavaVersion.VERSION_21
-targetCompatibility = JavaVersion.VERSION_21
 
 version = project.mod_version + "+" + project.target_version
 group = maven_group
 
 base {
-    //noinspection GrDeprecatedAPIUsage
-    archivesBaseName = archives_base_name
+    archivesName = project.archives_base_name
 }
 
 repositories {
@@ -20,17 +16,12 @@ repositories {
 
 dependencies {
     minecraft "com.mojang:minecraft:$minecraft_version"
-    mappings "net.fabricmc:yarn:$project.yarn_mappings:v2"
-    modImplementation "net.fabricmc:fabric-loader:$loader_version"
+    implementation "net.fabricmc:fabric-loader:$loader_version"
 
     // SpeedrunAPI
-    // check for the latest versions at https://jitpack.io/#contariaa/speedrunapi
-    modImplementation "com.github.contariaa:SpeedrunAPI:50e3af870f"
+    // Immutable JitPack artifact for the 26.2 compatibility port.
+    implementation "com.github.Dustiyn:SpeedrunAPI:2b6745c"
     annotationProcessor "com.github.bawnorton.mixinsquared:mixinsquared-fabric:0.1.1"
-}
-
-loom {
-    accessWidenerPath = file("src/main/resources/fast_reset.accesswidener")
 }
 
 processResources {
@@ -43,10 +34,13 @@ processResources {
 
 tasks.withType(JavaCompile).configureEach {
     it.options.encoding = "UTF-8"
-    it.options.release.set(21)
+    it.options.release.set(25)
 }
 
 java {
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
+
     // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
     // if it is present.
     // If you remove this line, sources will not be generated.
@@ -54,8 +48,11 @@ java {
 }
 
 jar {
+    def projectName = project.name
+    inputs.property "projectName", projectName
+
     from("LICENSE") {
-        rename { "${it}_${base.archivesName.get()}" }
+        rename { "${it}_${projectName}" }
     }
 }
 

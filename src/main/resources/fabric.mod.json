@@ -17,8 +17,8 @@
     "tildejustin"
   ],
   "contact": {
-    "sources": "https://github.com/contariaa/FastReset",
-    "issues": "https://github.com/contariaa/FastReset/issues"
+    "sources": "https://github.com/WRChip/FastReset",
+    "issues": "https://github.com/WRChip/FastReset/issues"
   },
   "license": "MIT",
   "environment": "client",
@@ -31,9 +31,9 @@
     "fast_reset.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.16.0",
-    "minecraft": "1.21.4",
-    "java": ">=21",
-    "speedrunapi": ">=2.0-beta.1"
+    "fabricloader": ">=0.19.3",
+    "minecraft": "~26.2",
+    "java": ">=25",
+    "speedrunapi": ">=2.1"
   }
 }
