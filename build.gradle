@@ -19,7 +19,7 @@ dependencies {
     implementation "net.fabricmc:fabric-loader:$loader_version"
 
     // SpeedrunAPI
-    // 26.2 compatibility port: https://github.com/Dustiyn/SpeedrunAPI/commit/2b6745c
+    // Immutable JitPack artifact for the 26.2 compatibility port.
     implementation "com.github.Dustiyn:SpeedrunAPI:2b6745c"
     annotationProcessor "com.github.bawnorton.mixinsquared:mixinsquared-fabric:0.1.1"
 }
